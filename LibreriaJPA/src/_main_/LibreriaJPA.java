@@ -30,16 +30,16 @@ public class LibreriaJPA {
         "1) Registrar préstamo.",
         "2) Registrar devolución.",
         "3) Ver Cliente.",
-        "4) Búsqueda de Libro.",
-        "5) Búsqueda de Autor.",
+        "4) Buscar Libro.",
+        "5) Buscar de Autor.",
         "x) SALIR.",
     };
     
     static final String [] SUBMENU = {
-        "1) Búsqueda de Libro por ISBN.",
-        "2) Búsqueda de Libro/s por Título.",
-        "3) Búsqueda de Libro/s por Autor.",
-        "4) Búsqueda de Libro/s por Editorial.",
+        "1) Buscar Libro por ISBN.",
+        "2) Buscar Libro/s por Título.",
+        "3) Buscar Libro/s por Autor.",
+        "4) Buscar Libro/s por Editorial.",
         "x) VOLVER.",
     };
 
@@ -141,19 +141,19 @@ public class LibreriaJPA {
             
             switch (option) {
 		case "1":
-			System.out.println("Opción 1. Búsqueda de Libro por ISBN:");
+			System.out.println("Opción 1. Buscar por ISBN:");
 			buscarLibroIsbn();
 			break;
 		case "2":
-			System.out.println("Opción 2. Búsqueda de Libro por Título:");
+			System.out.println("Opción 2. Buscar por Título:");
 			buscarLibroTitulo();
 			break;
 		case "3":
-			System.out.println("Opción 3. Búsqueda de Libro por Autor:");
+			System.out.println("Opción 3. Buscar por Autor:");
 			buscarLibroAutor();
 			break;
 		case "4":
-			System.out.println("Opción 4. Búsqueda de Libro por Editorial:");
+			System.out.println("Opción 4. Buscar por Editorial:");
 			buscarLibroEditorial();
 			break;
 		case "x":
@@ -167,7 +167,7 @@ public class LibreriaJPA {
     
     //Funciones Menú PRINCIPAL
     public static void prestarLibro() throws Exception {
-        System.out.print("Ingrese id de cliente: ");
+        System.out.print("Ingrese ID de cliente: ");
         int input1 = leerInt();
         Cliente cliente = clienteServicio.buscarPorId(input1);
         if (Objects.isNull(cliente)) {
@@ -205,7 +205,7 @@ public class LibreriaJPA {
     
     public static void devolverLibro() throws Exception {
         Prestamo prestamo;
-        System.out.print("Ingrese id de cliente: ");
+        System.out.print("Ingrese ID de cliente: ");
         int input1 = leerInt();
         Cliente cliente = clienteServicio.buscarPorId(input1);
         if (Objects.isNull(cliente)) {
@@ -242,7 +242,7 @@ public class LibreriaJPA {
     }
        
     public static void buscarCliente() throws Exception {
-        System.out.print("Ingrese id de cliente: ");
+        System.out.print("Ingrese ID de cliente: ");
         int input = leerInt();
         Cliente cliente = clienteServicio.buscarPorId(input);
         if (Objects.isNull(cliente)) {
@@ -252,7 +252,7 @@ public class LibreriaJPA {
         
         System.out.println(cliente);
         List<Prestamo> prestamos = prestamoServicio.buscarPorCliente(input);
-        System.out.println("PRESTAMOS VIGENTES:");
+        System.out.println("-PRESTAMOS VIGENTES:");
         imprimirResultados(prestamos);
     }
     
@@ -315,18 +315,15 @@ public class LibreriaJPA {
         return numero;
     }
     
-    public static Boolean imprimirResultados(List lista) {
+    public static void imprimirResultados(List lista) {
             if (lista.isEmpty() && lista.size() < 1) {
                 System.out.println("Sin resultados.");
-                return false;
             }
             if (lista.size() < 2) {
                 System.out.println(lista.get(0));
-                return false;
             }
             lista.forEach((entidad) -> {
                 System.out.println(entidad);
             });
-            return true;
     }
 }
