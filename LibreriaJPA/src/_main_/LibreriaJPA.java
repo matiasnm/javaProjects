@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.time.Period;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 import servicio.AutorServicio;
@@ -21,7 +22,8 @@ import servicio.PrestamoServicio;
 
 /*
 TODO
-Submenus para seleccionar entre resultados de búsquedas de libros y autores.
+Agregar opcion de seleccion en los metodos de busqueda que retornan listas
+para seleccionar entre los varios resultados de búsqueda.
 Validar campos obligatorios ?
 No ingresar datos duplicados ?
 */
@@ -57,6 +59,7 @@ public class LibreriaJPA {
     public static void main(String[] args) throws Exception {
         
         // Inserta algunas entidades en la base de datos
+        // EJECUTAR LA PRIMERA VEZ PARA CARGAR LA BASE DE DATOS
         /*
         Autor autor1 = autorServicio.crear(1, "J.L.Borges", true);
         Autor autor2 = autorServicio.crear(2, "Leopoldo Marechal", true);
@@ -96,15 +99,15 @@ public class LibreriaJPA {
             switch (option) {
 		case "1":
 			System.out.println("Opción 1. Registrar préstamo:");
-			opcion1();
+			prestarLibro();
 			break;
                 case "2":
 			System.out.println("Opción 2. Registrar devolución:");
-			opcion2();
+			devolverLibro();
 			break;
 		case "3":
 			System.out.println("Opción 3. Ver Cliente:");
-			opcion3();
+			buscarCliente();
 			break;
                 case "4":
                     	System.out.println("Opción 4. Buscar Libro:");
@@ -143,19 +146,19 @@ public class LibreriaJPA {
             switch (option) {
 		case "1":
 			System.out.println("Opción 1. Búsqueda de Libro por ISBN:");
-			busquedaLibro1();
+			buscarLibroIsbn();
 			break;
 		case "2":
 			System.out.println("Opción 2. Búsqueda de Libro por Título:");
-			busquedaLibro2();
+			buscarLibroTitulo();
 			break;
 		case "3":
 			System.out.println("Opción 3. Búsqueda de Libro por Autor:");
-			busquedaLibro3();
+			buscarLibroAutor();
 			break;
 		case "4":
 			System.out.println("Opción 4. Búsqueda de Libro por Editorial:");
-			busquedaLibro4();
+			buscarLibroEditorial();
 			break;
 		case "x":
 			return;
@@ -167,20 +170,32 @@ public class LibreriaJPA {
     }
     
     //Funciones Menú PRINCIPAL
-    public static void opcion1() throws Exception {
+    public static void prestarLibro() throws Exception {
         System.out.print("Ingrese id de cliente: ");
-        int input1 = readInt();
+        int input1 = leerInt();
         Cliente cliente = clienteServicio.buscarPorId(input1);
-        System.out.println(cliente);
+        if (Objects.isNull(cliente)) {
+            System.out.println("Sin resultados.");
+            return;
+        }
         
+        System.out.println(cliente);
         System.out.print("Ingrese ISBN del libro: ");
         String input2 = leer.nextLine();
         Libro libro = libroServicio.buscarPorId(input2);
+        if (Objects.isNull(libro)) {
+            System.out.println("Sin resultados.");
+            return;
+        }
         
-        System.out.print("Ingrese cantidad de días: ");
-        input1 = readInt();
+        System.out.print("Ingrese cantidad de días (MÁX 15): ");
+        input1 = leerInt();
+        if (input1 > 15 || input1 < 1) {
+            System.out.println("Opción inválida.");
+            return;
+        }
         
-        //Convierte de java.time.Instant -> java.util.date (JPA 2.1 no funciona con java.time)
+        //Convierte de java.time.Instant a java.util.date (JPA 2.1 no funciona con java.time)
         Date desde = Date.from(Instant.now());
         Date hasta = Date.from(Instant.now().plus(Period.ofDays(input1)));
         
@@ -192,117 +207,104 @@ public class LibreriaJPA {
         }
     }
     
-    public static void opcion2() throws Exception {
+    public static void devolverLibro() throws Exception {
+        Prestamo prestamo;
         System.out.print("Ingrese id de cliente: ");
-        int input1 = readInt();
+        int input1 = leerInt();
         Cliente cliente = clienteServicio.buscarPorId(input1);
-        System.out.println(cliente);
-        
-        List<Prestamo> prestamos = prestamoServicio.buscarPorCliente(input1);
-        
-        for (int i = 0; i < prestamos.size(); i++) {
-            Prestamo prestamo = prestamos.get(i);
-            System.out.println(i + ") " + prestamo);
-        }
-        System.out.print("Ingrese una opción: ");
-        input1 = readInt();
-        
-        if (input1 < 0 || input1 > prestamos.size()) {
-            System.out.println("Opción incorrecta.");
+        if (Objects.isNull(cliente)) {
+            System.out.println("Sin resultados.");
             return;
         }
         
-        Prestamo prestamo = prestamos.get(input1);
+        System.out.println(cliente);
+        List<Prestamo> prestamos = prestamoServicio.buscarPorCliente(input1);
+        
+        if (Objects.isNull(prestamos)) {
+            System.out.println("Sin resultados.");
+            return;
+        }
+        
+        imprimirResultados(prestamos);
+        System.out.print("Ingrese ID del prestamo: ");
+        input1 = leerInt();
+        prestamo = prestamoServicio.buscarPorId(input1);
+        if (Objects.isNull(prestamo)) {
+            System.out.println("ID inválido.");
+            return;
+        }
+        if (prestamo.getCliente() != cliente) {
+            System.out.println("Prestamo inválido para el cliente ID: " + cliente.getId() + " NOMBRE: " + cliente.getNombre() + cliente.getApellido());
+            return;
+        }
+        
+        System.out.print("Prestamo seleccionado:\n" + prestamo);
         Libro libro = prestamo.getLibro();
         libroServicio.devolver(libro);
         libroServicio.editar(libro);
         prestamoServicio.eliminar(prestamo);
     }
        
-    public static void opcion3() throws Exception {
+    public static void buscarCliente() throws Exception {
         System.out.print("Ingrese id de cliente: ");
-        int input = readInt();
+        int input = leerInt();
         Cliente cliente = clienteServicio.buscarPorId(input);
-        System.out.println(cliente);
-        
-        List<Prestamo> prestamos = prestamoServicio.buscarPorCliente(input);
-        if (prestamos.isEmpty()) {
-            System.out.println("Sin prestamos vigentes.");
+        if (Objects.isNull(cliente)) {
+            System.out.println("Sin resultados.");
             return;
         }
-        prestamos.forEach((prestamo) -> {
-            System.out.println(prestamo);
-        });
+        
+        System.out.println(cliente);
+        List<Prestamo> prestamos = prestamoServicio.buscarPorCliente(input);
+        System.out.println("PRESTAMOS VIGENTES:");
+        imprimirResultados(prestamos);
     }
     
-    public static Autor buscarAutor(){
-        Autor autor;
+    public static void buscarAutor(){
         System.out.println("\nBÚSQUEDA DE AUTOR");
         System.out.print("Ingrese el Autor: ");
         String input = leer.nextLine();
         List<Autor> autores = autorServicio.buscarPorNombre(input);
-        if (autores.isEmpty() && autores.size() < 1) {
-            System.out.println("Sin resultados.");
-            return null;
-        }
-        System.out.println(autores);
-        if (autores.size() > 1) {
-            System.out.println("Más de un resultado para el término \"" + input + "\"!\n(Se selecciona el primero por default)");           
-        }
-        autor = autores.get(0);
-        return autor;
+        imprimirResultados(autores);
     }
     
     // Funciones Submenu SUBMENU LIBRO
-    public static Libro busquedaLibro1(){
+    public static Libro buscarLibroIsbn(){
         System.out.print("Ingrese el ISBN: ");
         String input = leer.nextLine();
         Libro libro = libroServicio.buscarPorId(input);
+        if (Objects.isNull(libro)) {
+            System.out.println("Sin resultados.");
+            return null;
+        }
         System.out.println(libro);
         return libro;
     }
     
-    public static Libro busquedaLibro2(){
-        Libro libro;
+    public static void buscarLibroTitulo(){
         System.out.print("Ingrese el Título: ");
         String input = leer.nextLine();
         List<Libro> libros = libroServicio.buscarPorTitulo(input);
-        
-        if (libros.isEmpty() && libros.size() < 1) {
-            System.out.println("Sin resultados.");
-            return null;
-        }
-        System.out.println(libros);
-        if (libros.size() > 1) {
-            System.out.println("Más de un resultado para el término \"" + input + "\"!\n(Se selecciona el primero por default)");           
-        }
-        libro = libros.get(0);
-        return libro;
+        imprimirResultados(libros);
     }
 
-    public static List<Libro> busquedaLibro3(){
+    public static void buscarLibroAutor(){
         System.out.print("Ingrese el Autor: ");
         String input = leer.nextLine();
         List<Libro> libros = libroServicio.buscarPorAutor(input);
-        libros.forEach((libro) -> {
-            System.out.println(libro);
-        });
-        return libros;
+        imprimirResultados(libros);
     }
     
-    public static List<Libro> busquedaLibro4(){
+    public static void buscarLibroEditorial(){
         System.out.print("Ingrese la Editorial: ");
         String input = leer.nextLine();
         List<Libro> libros = libroServicio.buscarPorEditorial(input);
-        libros.forEach((libro) -> {
-            System.out.println(libro);
-        });
-        return libros;
+        imprimirResultados(libros);
     }
     
     // OTROS
     // Lee numero entero del usuario
-    public static int readInt() throws Exception {
+    public static int leerInt() throws Exception {
         int numero = -1;
         
         while (true) {
@@ -315,5 +317,20 @@ public class LibreriaJPA {
             }
         }
         return numero;
+    }
+    
+    public static Boolean imprimirResultados(List lista) {
+            if (lista.isEmpty() && lista.size() < 1) {
+                System.out.println("Sin resultados.");
+                return false;
+            }
+            if (lista.size() < 2) {
+                System.out.println(lista.get(0));
+                return false;
+            }
+            lista.forEach((entidad) -> {
+                System.out.println(entidad);
+            });
+            return true;
     }
 }

@@ -115,8 +115,8 @@ public class Libro implements Serializable {
 
     @Override
     public String toString() {
-        return "LIBRO:\tISBN:" + isbn + "\tTITULO:" + titulo +
-                "\tAUTOR:" + autor.getNombre() + "\tEDITORIAL:" + editorial.getNombre() +
-                "\t[Total/Prestados/Disponibles]:" + ejemplares + "/" + ejemplaresPrestados + "/" + ejemplaresRestantes;
+        return "LIBRO:\tISBN: " + isbn + "\tTITULO: " + titulo +
+                "\tAUTOR: " + autor.getNombre() + "\tEDITORIAL: " + editorial.getNombre() +
+                "\t[Total/Prestados/Disponibles]: " + ejemplares + "/" + ejemplaresPrestados + "/" + ejemplaresRestantes;
     }
 }

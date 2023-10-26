@@ -51,6 +51,6 @@ public class Editorial implements Serializable {
 
     @Override
     public String toString() {
-        return "EDITORIAL\t\tID:" + id + "\tNOMBRE:" + nombre + "\tALTA:" + alta;
+        return "EDITORIAL\t\tID: " + id + "\tNOMBRE: " + nombre + "\tALTA: " + alta;
     }
 }

@@ -33,6 +33,18 @@ public class PrestamoServicio {
     }
     
     // read
+    public Prestamo buscarPorId(int id) {
+        Prestamo prestamo;
+        try {
+            prestamo = dao.buscarPorId(id);
+            return prestamo;
+        }
+        catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
+    
     public List<Prestamo> buscarPorCliente(int id) {
         List<Prestamo> prestamos;
         try {
@@ -43,7 +55,7 @@ public class PrestamoServicio {
             System.out.println(ex.getMessage());
             return null;
         }
-    };
+    }
     
     // update
     public void editar(Prestamo prestamo) {

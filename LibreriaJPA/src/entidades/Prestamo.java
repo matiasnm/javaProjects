@@ -86,7 +86,7 @@ public class Prestamo implements Serializable {
     @Override
     public String toString() {
         DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");   
-        return "PRESTAMO\tId:" + id + "\tDESDE:" + dateFormat.format(desde) + "\tHASTA:" + dateFormat.format(hasta) +
+        return "PRESTAMO\tID: " + id + "\tDESDE: " + dateFormat.format(desde) + "\tHASTA: " + dateFormat.format(hasta) +
                 "\n  └>" + libro;
     }  
 }

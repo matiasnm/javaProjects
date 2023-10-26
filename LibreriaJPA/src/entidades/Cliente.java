@@ -76,6 +76,6 @@ public class Cliente implements Serializable {
 
     @Override
     public String toString() {
-        return "CLIENTE\t\tID:" + id + "\tDNI:" + dni + "\tNOMBRE:" + nombre + " " + apellido;
+        return "CLIENTE\t\tID: " + id + "\tDNI: " + dni + "\tNOMBRE: " + nombre + " " + apellido;
     }
 }
