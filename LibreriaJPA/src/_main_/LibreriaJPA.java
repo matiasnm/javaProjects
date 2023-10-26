@@ -22,10 +22,6 @@ import servicio.PrestamoServicio;
 
 /*
 TODO
-Agregar opcion de seleccion en los metodos de busqueda que retornan listas
-para seleccionar entre los varios resultados de búsqueda.
-Validar campos obligatorios ?
-No ingresar datos duplicados ?
 */
 
 public class LibreriaJPA {
