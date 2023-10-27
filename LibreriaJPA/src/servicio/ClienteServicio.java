@@ -14,10 +14,10 @@ public class ClienteServicio {
     }
 
     // create 
-    public Cliente crear(int id, String dni, String nombre, String apellido, String telefono) {
+    public Cliente crear(int id, String dni, String nombre, String apellido, String telefono, boolean alta) {
         Cliente cliente;
         try {
-            cliente = new Cliente(id, dni, nombre, apellido, telefono);
+            cliente = new Cliente(id, dni, nombre, apellido, telefono, alta);
             dao.guardar(cliente);
             return cliente;
         }

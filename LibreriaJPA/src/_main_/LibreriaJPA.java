@@ -71,12 +71,12 @@ public class LibreriaJPA {
         Libro libro4 = libroServicio.crear("3456", "Adán Buenosayres", 2004, 10, 0, 10, true, autor2, editorial3);
         Libro libro5 = libroServicio.crear("4567", "Museo de la Novela de la Eterna", 1996, 0, 0, 0, true, autor3, editorial4);       
         
-        Cliente cliente1 = clienteServicio.crear(1, "123", "Cosme", "Fulanito", "1123456789");
-        Cliente cliente2 = clienteServicio.crear(2, "456", "Mr. Chispa", "", "1198765432");
+        Cliente cliente1 = clienteServicio.crear(1, "123", "Cosme", "Fulanito", "1123456789", true);
+        Cliente cliente2 = clienteServicio.crear(2, "456", "Mr. Chispa", "", "1198765432", true);
 
         Date desde = Date.from(Instant.now());
         Date hasta = Date.from(Instant.now().plus(Period.ofDays(10)));
-        Prestamo prestamo1 = prestamoServicio.crear(1, desde, hasta, cliente1, libro1);
+        Prestamo prestamo1 = prestamoServicio.crear(1, desde, hasta, cliente1, libro1, true);
         */
         
         // Menú PRINCIPAL
@@ -169,23 +169,36 @@ public class LibreriaJPA {
     public static void prestarLibro() throws Exception {
         System.out.print("Ingrese ID de cliente: ");
         int input1 = leerInt();
+        
         Cliente cliente = clienteServicio.buscarPorId(input1);
         if (Objects.isNull(cliente)) {
             System.out.println("Sin resultados.");
             return;
         }
         
+        if (!cliente.isAlta()) {
+            System.out.println("El cliente está dado de baja.");
+            return;
+        }
         System.out.println(cliente);
+        
         System.out.print("Ingrese ISBN del libro: ");
         String input2 = leer.nextLine();
         Libro libro = libroServicio.buscarPorId(input2);
+        
         if (Objects.isNull(libro)) {
             System.out.println("Sin resultados.");
             return;
         }
         
+        if (!libro.isAlta()) {
+            System.out.println("El libro está dado de baja.");
+            return;
+        }
+        
         System.out.print("Ingrese cantidad de días (MÁX 15): ");
         input1 = leerInt();
+        
         if (input1 > 15 || input1 < 1) {
             System.out.println("Opción inválida.");
             return;
@@ -196,7 +209,7 @@ public class LibreriaJPA {
         Date hasta = Date.from(Instant.now().plus(Period.ofDays(input1)));
         
         if (libroServicio.prestar(libro)) {
-            Prestamo prestamo = prestamoServicio.crear(input1, desde, hasta, cliente, libro);
+            Prestamo prestamo = prestamoServicio.crear(input1, desde, hasta, cliente, libro, true);
             System.out.println(prestamo);
         } else {
             System.out.println("Sin libros para prestar.");
@@ -208,12 +221,18 @@ public class LibreriaJPA {
         System.out.print("Ingrese ID de cliente: ");
         int input1 = leerInt();
         Cliente cliente = clienteServicio.buscarPorId(input1);
+        
         if (Objects.isNull(cliente)) {
             System.out.println("Sin resultados.");
             return;
         }
         
+        if (!cliente.isAlta()) {
+            System.out.println("El cliente está dado de baja.");
+            return;
+        }
         System.out.println(cliente);
+        
         List<Prestamo> prestamos = prestamoServicio.buscarPorCliente(input1);
         
         if (Objects.isNull(prestamos)) {
@@ -222,23 +241,38 @@ public class LibreriaJPA {
         }
         
         imprimirResultados(prestamos);
+        
         System.out.print("Ingrese ID del prestamo: ");
         input1 = leerInt();
         prestamo = prestamoServicio.buscarPorId(input1);
+        
         if (Objects.isNull(prestamo)) {
             System.out.println("ID inválido.");
             return;
         }
-        if (prestamo.getCliente() != cliente) {
+        
+        if (prestamo.isAlta() == false) {
+            System.out.println("El prestamo está dado de baja.");
+            return;
+        }
+                
+        if (prestamo.getCliente().getId() != cliente.getId()) {
             System.out.println("Prestamo inválido para el cliente ID: " + cliente.getId() + " NOMBRE: " + cliente.getNombre() + cliente.getApellido());
             return;
         }
         
-        System.out.print("Prestamo seleccionado:\n" + prestamo);
+        System.out.println("Prestamo seleccionado:\n" + prestamo);
         Libro libro = prestamo.getLibro();
         libroServicio.devolver(libro);
         libroServicio.editar(libro);
-        prestamoServicio.eliminar(prestamo);
+        
+        // Da de baja el prestamo...
+        prestamoServicio.darBaja(prestamo);
+        System.out.println("Prestamo dado de baja.");
+        
+        // !!Elimina el prestamo...
+        //prestamoServicio.eliminar(prestamo);
+        //System.out.println("Prestamo eliminado.");
     }
        
     public static void buscarCliente() throws Exception {
@@ -252,7 +286,7 @@ public class LibreriaJPA {
         
         System.out.println(cliente);
         List<Prestamo> prestamos = prestamoServicio.buscarPorCliente(input);
-        System.out.println("-PRESTAMOS VIGENTES:");
+        System.out.println("== PRESTAMOS VIGENTES ==");
         imprimirResultados(prestamos);
     }
     
@@ -318,9 +352,11 @@ public class LibreriaJPA {
     public static void imprimirResultados(List lista) {
             if (lista.isEmpty() && lista.size() < 1) {
                 System.out.println("Sin resultados.");
+                return;
             }
             if (lista.size() < 2) {
                 System.out.println(lista.get(0));
+                return;
             }
             lista.forEach((entidad) -> {
                 System.out.println(entidad);

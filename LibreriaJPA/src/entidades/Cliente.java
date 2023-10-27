@@ -22,16 +22,19 @@ public class Cliente implements Serializable {
     private String nombre;
     private String apellido;
     private String telefono;
-
+    
+    private boolean alta;
+    
     public Cliente() {
     }
 
-    public Cliente(int id, String dni, String nombre, String apellido, String telefono) {
+    public Cliente(int id, String dni, String nombre, String apellido, String telefono, boolean alta) {
         this.id = id;
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
+        this.alta = alta;
     }
 
     public int getId() {
@@ -52,6 +55,14 @@ public class Cliente implements Serializable {
 
     public String getTelefono() {
         return telefono;
+    }
+
+    public boolean isAlta() {
+        return alta;
+    }
+
+    public void setAlta(boolean alta) {
+        this.alta = alta;
     }
 
     public void setId(int id) {

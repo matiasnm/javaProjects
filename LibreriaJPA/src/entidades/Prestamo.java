@@ -32,15 +32,18 @@ public class Prestamo implements Serializable {
     @OneToOne
     private Libro libro;
 
+    private boolean alta;
+
     public Prestamo() {
     }
 
-    public Prestamo(int id, Date desde, Date hasta, Cliente cliente, Libro libro) {
+    public Prestamo(int id, Date desde, Date hasta, Cliente cliente, Libro libro, boolean alta) {
         this.id = id;
         this.desde = desde;
         this.hasta = hasta;
         this.cliente = cliente;
         this.libro = libro;
+        this.alta = alta;
     }
 
     public int getId() {
@@ -67,6 +70,10 @@ public class Prestamo implements Serializable {
         this.id = id;
     }
 
+    public boolean isAlta() {
+        return alta;
+    }
+
     public void setPrestamo(Date prestamo) {
         this.desde = prestamo;
     }
@@ -83,10 +90,14 @@ public class Prestamo implements Serializable {
         this.cliente = cliente;
     }
 
+    public void setAlta(boolean alta) {
+        this.alta = alta;
+    }
+
     @Override
     public String toString() {
         DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");   
-        return "PRESTAMO\tID: " + id + "\tDESDE: " + dateFormat.format(desde) + "\tHASTA: " + dateFormat.format(hasta) +
+        return "PRESTAMO\tID: " + id + "\tALTA: " + alta + "\tDESDE: " + dateFormat.format(desde) + "\tHASTA: " + dateFormat.format(hasta) +
                 "\n  └>" + libro;
     }  
 }

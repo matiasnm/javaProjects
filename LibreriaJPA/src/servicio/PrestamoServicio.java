@@ -19,10 +19,10 @@ public class PrestamoServicio {
     }
     
     // create
-    public Prestamo crear(int id, Date desde, Date hasta, Cliente cliente, Libro libro) {
+    public Prestamo crear(int id, Date desde, Date hasta, Cliente cliente, Libro libro, boolean alta) {
         Prestamo prestamo;
         try {
-            prestamo = new Prestamo(id, desde, hasta, cliente, libro);
+            prestamo = new Prestamo(id, desde, hasta, cliente, libro, alta);
             dao.guardar(prestamo);
             return prestamo;
         }
@@ -65,6 +65,11 @@ public class PrestamoServicio {
         catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+    }
+    
+    public void darBaja(Prestamo prestamo) {
+        prestamo.setAlta(false);
+        this.editar(prestamo);
     }
     
     // delete

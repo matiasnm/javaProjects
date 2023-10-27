@@ -39,6 +39,20 @@ public class DaoPrestamo extends Dao<Prestamo>  {
         }
     }
     
+    public List<Prestamo> buscarPorCliente_Altas(int id) throws Exception {
+        try {
+            conectar();
+            TypedQuery<Prestamo> consulta;
+            consulta = em.createQuery("SELECT p FROM Prestamo p WHERE p.cliente.id = :id AND p.alta = true", Prestamo.class)
+                    .setParameter("id", id);
+            return consulta.getResultList();
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+            desconectar();
+        }
+    }
+    
     //update
     public void editar(Prestamo prestamo) {
         super.update(prestamo);
