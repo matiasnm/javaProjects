@@ -17,6 +17,12 @@ import org.springframework.ui.ModelMap;
 @Controller
 @RequestMapping("/")
 public class NoticiaControlador {
+/*
+ * TODO
+ * 1. agregar Excepciones
+ * 2. verificacion campos
+ * 3. metodo login
+ */
     
     @Autowired
     private NoticiaServicio noticiaServicio;
@@ -72,6 +78,11 @@ public class NoticiaControlador {
     public String delete(@RequestParam(required=false) String idBorrar, ModelMap modelo) {
         noticiaServicio.delete(idBorrar);
        return "redirect:/";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login.html";
     }
     
 }
