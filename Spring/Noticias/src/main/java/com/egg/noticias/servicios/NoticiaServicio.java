@@ -35,10 +35,19 @@ public class NoticiaServicio {
         return noticia;
     }
 
+    /*
     @Transactional()//readOnly = true
     public List<Noticia> search(String titulo) {
         List<Noticia> noticias;
         noticias = noticiaRepositorio.buscarPorTitulo(titulo);
+        return noticias;
+    }
+    */
+
+    @Transactional()//readOnly = true
+    public List<Noticia> search(String titulo) {
+        List<Noticia> noticias;
+        noticias = noticiaRepositorio.findByTituloContains(titulo);
         return noticias;
     }
 

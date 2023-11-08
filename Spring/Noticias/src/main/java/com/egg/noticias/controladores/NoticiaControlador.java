@@ -23,14 +23,9 @@ public class NoticiaControlador {
  * 2. verificacion campos
  * 3. metodo login
  */
-    
+
     @Autowired
     private NoticiaServicio noticiaServicio;
-
-    @GetMapping("/error")
-    public String error() {
-        return "error.html";
-    }
 
     @GetMapping("/")
     public String home(ModelMap modelo) {
@@ -40,7 +35,7 @@ public class NoticiaControlador {
     }
     
     @PostMapping("/crear")
-    public String createPost(@RequestParam(required=false) String tituloCrear, @RequestParam(required=false) String cuerpoCrear, ModelMap modelo) {
+    public String createPost(@RequestParam String tituloCrear, @RequestParam String cuerpoCrear, ModelMap modelo) {
         try {
             noticiaServicio.create(tituloCrear, cuerpoCrear);
             return "redirect:/";
@@ -50,15 +45,17 @@ public class NoticiaControlador {
             return "redirect:/";
         }
     }
-       
+
     @PostMapping("/editar")
-    public String updateGet(@RequestParam String id, ModelMap modelo) {
-        modelo.put("editar", noticiaServicio.read(id));     
+    public String updatePost(@RequestParam String idEditar, ModelMap modelo) {
+        modelo.put("editar", noticiaServicio.read(idEditar));     
         return home(modelo);
     }
 
-    @PostMapping("/guardar")
-    public String updatePost(@RequestParam(required=false) String tituloGuardar, @RequestParam(required=false) String cuerpoGuardar, @RequestParam(required=false) String idGuardar, ModelMap modelo) {
+    //@PatchMapping no anda para recibir PATCH(?), uso @RequestMapping.
+    @RequestMapping("/guardar")
+    //cambio Param por Path..@RequestParam String tituloGuardar, @RequestParam String cuerpoGuardar, @RequestParam String idGuardar, ModelMap modelo) {
+    public String updatePatch(@RequestPath String tituloGuardar, @RequestPath String cuerpoGuardar, @RequestPath String idGuardar, ModelMap modelo) {
         try {
             noticiaServicio.update(idGuardar, tituloGuardar, cuerpoGuardar);
             return "redirect:/";
@@ -68,16 +65,17 @@ public class NoticiaControlador {
     }
     
     @PostMapping("/buscar")
-    public String search(@RequestParam(required=false) String tituloBuscar, ModelMap modelo) {
+    public String searchPost(@RequestParam String tituloBuscar, ModelMap modelo) {
         List<Noticia> noticias = noticiaServicio.search(tituloBuscar);
         modelo.addAttribute("noticias", noticias);
         return "home.html";
     }
-
-    @GetMapping("/borrar")
-    public String delete(@RequestParam(required=false) String idBorrar, ModelMap modelo) {
+    
+    //@DeleteMapping no anda para recibir DELETE(?), uso @RequestMapping.
+    @RequestMapping("/borrar")
+    public String delete(@RequestPath String idBorrar, ModelMap modelo) {
         noticiaServicio.delete(idBorrar);
-       return "redirect:/";
+        return "redirect:/";
     }
 
     @GetMapping("/login")
