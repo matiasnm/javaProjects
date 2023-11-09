@@ -1,10 +1,9 @@
 package com.egg.noticias.controladores;
 
 import com.egg.noticias.entidades.Noticia;
+import com.egg.noticias.excepciones.CamposVacios;
 import com.egg.noticias.servicios.NoticiaServicio;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,8 +18,6 @@ import org.springframework.ui.ModelMap;
 public class NoticiaControlador {
 /*
  * TODO
- * 1. agregar Excepciones
- * 2. verificacion campos
  * 3. metodo login
  */
 
@@ -40,9 +37,9 @@ public class NoticiaControlador {
             noticiaServicio.create(tituloCrear, cuerpoCrear);
             return "redirect:/";
         } 
-        catch(Exception ex) {
-            Logger.getLogger(NoticiaServicio.class.getName()).log(Level.SEVERE, null, ex);
-            return "redirect:/";
+        catch (CamposVacios ex) {
+            modelo.put("alerta", ex.getMessage());
+            return home(modelo);
         }
     }
 
@@ -54,12 +51,12 @@ public class NoticiaControlador {
 
     //@PatchMapping no anda para recibir PATCH(?), uso @RequestMapping.
     @RequestMapping("/guardar")
-    //cambio Param por Path..@RequestParam String tituloGuardar, @RequestParam String cuerpoGuardar, @RequestParam String idGuardar, ModelMap modelo) {
-    public String updatePatch(@RequestPath String tituloGuardar, @RequestPath String cuerpoGuardar, @RequestPath String idGuardar, ModelMap modelo) {
+    public String updatePatch(@RequestParam String tituloGuardar, @RequestParam String cuerpoGuardar, @RequestParam String idGuardar, ModelMap modelo) {
         try {
             noticiaServicio.update(idGuardar, tituloGuardar, cuerpoGuardar);
             return "redirect:/";
-        } catch (Exception ex) {
+        } catch (CamposVacios ex) {
+            modelo.put("alerta", ex.getMessage());
             return "redirect:/";
         }
     }
@@ -73,7 +70,7 @@ public class NoticiaControlador {
     
     //@DeleteMapping no anda para recibir DELETE(?), uso @RequestMapping.
     @RequestMapping("/borrar")
-    public String delete(@RequestPath String idBorrar, ModelMap modelo) {
+    public String delete(@RequestParam String idBorrar, ModelMap modelo) {
         noticiaServicio.delete(idBorrar);
         return "redirect:/";
     }

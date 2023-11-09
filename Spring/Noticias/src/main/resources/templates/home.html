@@ -4,6 +4,7 @@
 
       <!-- Main:Noticias -->
       <main layout:fragment="content">
+
         <div class="container" th:if="${noticias.size() >= 1}">
             <div th:each="noticia:${noticias}" class="card my-5" style="background-color: #ffffff00;">
                 <div class="card-header d-inline-flex align-content-between align-items-center">
@@ -32,7 +33,6 @@
         <div th:unless="${noticias.size() >= 1}" class="alert alert-warning text-center" role="alert">
           No hay Noticias para mostrar.
         </div>
-      
 
       <!-- Modal: Editar -->
       <div th:if="${editar}" class="modal fade" id="modalEditar" data-bs-theme="dark" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
@@ -66,6 +66,6 @@
       <button th:if="${editar}" id="editarBtn" hidden class="nav-link btn-secondary btn btn-sm toggle" type="button" data-bs-toggle="modal" data-bs-target="#modalEditar"></button>
     </main>
       
-      <th:block layout:fragment="script">
-        <script th:if="${editar}">document.querySelector("#editarBtn").click();</script>
-      </th:block>
+    <th:block layout:fragment="script">
+      <script th:if="${editar}">document.querySelector("#editarBtn").click();</script>
+    </th:block>
