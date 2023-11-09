@@ -57,7 +57,7 @@ public class NoticiaControlador {
             return "redirect:/";
         } catch (CamposVacios ex) {
             modelo.put("alerta", ex.getMessage());
-            return "redirect:/";
+            return home(modelo);
         }
     }
     
