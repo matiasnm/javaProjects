@@ -42,6 +42,12 @@
               <h1 class="modal-title fs-5" style="color:white;">Editar Noticia</h1>
               <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
             </div>
+            
+            <!-- Alerta -->
+            <div  th:if="${alerta != null}" class="text-center">
+              <div th:text="${alerta}" class="alert alert-danger p-2 m-0" role="alert"></div>
+            </div>
+
             <form id="guardarForm" class="col" action="/guardar" method="PATCH">
             <div class="modal-body"> 
                 <div class="container">

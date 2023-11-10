@@ -1,7 +1,7 @@
 package com.egg.noticias.servicios;
 
 import com.egg.noticias.entidades.Noticia;
-import com.egg.noticias.excepciones.CamposVacios;
+import com.egg.noticias.excepciones.CamposVaciosException;
 import com.egg.noticias.repositorios.NoticiaRepositorio;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +17,7 @@ public class NoticiaServicio {
     private NoticiaRepositorio noticiaRepositorio;
 
     @Transactional
-    public void create(String titulo, String cuerpo) throws CamposVacios {
+    public void create(String titulo, String cuerpo) throws CamposVaciosException {
         validar(titulo, cuerpo);
         Noticia noticia = new Noticia(titulo, cuerpo);
         noticiaRepositorio.save(noticia);
@@ -54,7 +54,7 @@ public class NoticiaServicio {
     }
 
     @Transactional
-    public void update(String id, String titulo, String cuerpo) throws CamposVacios{
+    public void update(String id, String titulo, String cuerpo) throws CamposVaciosException{
         validar(titulo, cuerpo);
         
         Optional<Noticia> respuesta = noticiaRepositorio.findById(id);
@@ -72,12 +72,12 @@ public class NoticiaServicio {
         noticiaRepositorio.deleteById(id);
     }
 
-    private void validar(String titulo, String cuerpo) throws CamposVacios{
+    private void validar(String titulo, String cuerpo) throws CamposVaciosException{
         if(titulo.isEmpty() || titulo == null){
-            throw new CamposVacios("El título de la Noticia no puede estar vacío.");
+            throw new CamposVaciosException("El título de la Noticia no puede estar vacío.");
         }
         if(cuerpo.isEmpty() || cuerpo == null){
-            throw new CamposVacios("El cuerpo de la Noticia no puede estar vacío.");
+            throw new CamposVaciosException("El cuerpo de la Noticia no puede estar vacío.");
         }
     }
     

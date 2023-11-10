@@ -26,7 +26,7 @@
                   <a class="nav-link" aria-current="page" href="/login">Login</a>
                 </li>
                 <li class="nav-item px-2">
-                  <button class="nav-link btn-secondary btn btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalCrear">Crear</button>
+                  <button id="crearBtn" class="nav-link btn-secondary btn btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#modalCrear">Crear</button>
                 </li>
               </ul>
               <!-- Buscar -->
@@ -37,11 +37,6 @@
             </div>
           </div>
       </nav>
-
-      <!-- Alerta -->
-      <div  th:if="${alerta != null}" class="text-center">
-        <div th:text="${alerta}" class="alert alert-danger p-2 m-0" role="alert"></div>
-      </div>
 
       <main layout:fragment="content">
       </main>
@@ -55,6 +50,11 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
+            <!-- Alerta -->
+            <div  th:if="${alerta != null}" class="text-center">
+              <div th:text="${alerta}" class="alert alert-danger p-2 m-0" role="alert"></div>
+            </div>
+            
             <form id="crearForm" class="col" action="/crear" method="POST">
             <div class="modal-body"> 
                 <div class="container">
@@ -75,6 +75,7 @@
         </div>
       </div>
       
+      <script th:if="${crear}">document.querySelector("#crearBtn").click();</script>
       <th:block layout:fragment="script"></th:block>
     </body>
 </html>

@@ -1,7 +1,7 @@
 package com.egg.noticias.controladores;
 
 import com.egg.noticias.entidades.Noticia;
-import com.egg.noticias.excepciones.CamposVacios;
+import com.egg.noticias.excepciones.CamposVaciosException;
 import com.egg.noticias.servicios.NoticiaServicio;
 import java.util.List;
 
@@ -37,8 +37,9 @@ public class NoticiaControlador {
             noticiaServicio.create(tituloCrear, cuerpoCrear);
             return "redirect:/";
         } 
-        catch (CamposVacios ex) {
+        catch (CamposVaciosException ex) {
             modelo.put("alerta", ex.getMessage());
+            modelo.put("crear", true);
             return home(modelo);
         }
     }
@@ -55,8 +56,9 @@ public class NoticiaControlador {
         try {
             noticiaServicio.update(idGuardar, tituloGuardar, cuerpoGuardar);
             return "redirect:/";
-        } catch (CamposVacios ex) {
+        } catch (CamposVaciosException ex) {
             modelo.put("alerta", ex.getMessage());
+            modelo.put("editar", noticiaServicio.read(idGuardar));
             return home(modelo);
         }
     }
