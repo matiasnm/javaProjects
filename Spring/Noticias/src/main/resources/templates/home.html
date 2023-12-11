@@ -1,77 +1,23 @@
-<html lang="en" 
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="layout">
+<html lang="en" xmlns:th="http://www.tyhmeleaf.org" xmlns:sec="http://www.tyhmeleaf.org/extras/spring-security">
+<head th:replace="/fragments/head.html::head"></head>
 
-      <!-- Main:Noticias -->
-      <main layout:fragment="content">
+<body>
+  <navbar th:replace="/fragments/navbar.html::navbar"></navbar>
 
-        <div class="container" th:if="${noticias.size() >= 1}">
-            <div th:each="noticia:${noticias}" class="card my-5" style="background-color: #ffffff00;">
-                <div class="card-header d-inline-flex align-content-between align-items-center">
-                  <div class="container d-flex justify-content-start">
-                    <h6 th:text="${noticia.titulo}"></h6>
-                  </div>
-                  <div class="container d-flex justify-content-end">
-                    <!-- Delete Btn -->
-                    <form id="borrarForm" class="" action="/borrar" method="DELETE">
-                      <input hidden type="text" class="form-control" id="idBorrar" name="idBorrar" th:value="${noticia.id}">
-                      <button type="submit" class="btn" title="Borrar"><i class="bi bi-trash3"></i></button>
-                    </form>
-                    <!-- Edit Btn -->
-                    <form id="editarForm" class="" action="/editar" method="POST">
-                      <input hidden type="text" class="form-control" id="idEditar" name="idEditar" th:value="${noticia.id}">
-                      <button type="submit" class="btn" title="Editar"><i class="bi bi-pencil-square"></i></button>
-                    </form>
-                  </div>
-                </div>
-                <div class="card-body" style="text-align: justify;">
-                  <!--<h5 class="card-title">Special title treatment</h5>-->
-                  <p th:text="${noticia.cuerpo}" class="card-text"></p>
-                </div>
-            </div>
-        </div>
-        <div th:unless="${noticias.size() >= 1}" class="alert alert-warning text-center" role="alert">
-          No hay Noticias para mostrar.
-        </div>
+  <!-- Msg -->
+  <section th:if="${msg}">
+    <div th:text="${msg}" class="alert alert-success text-center rounded-0 border-0" role="alert">
+    </div>
+  </section>
 
-      <!-- Modal: Editar -->
-      <div th:if="${editar}" class="modal fade" id="modalEditar" data-bs-theme="dark" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-          <div class="modal-content" style="background-color:#212529c0;">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" style="color:white;">Editar Noticia</h1>
-              <a href="/"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
-            </div>
-            
-            <!-- Alerta -->
-            <div  th:if="${alerta != null}" class="text-center">
-              <div th:text="${alerta}" class="alert alert-danger p-2 m-0" role="alert"></div>
-            </div>
+  <!-- Main:Noticias -->
+  <main th:replace="/fragments/noticias.html::noticias"></main>
+  
+  <!-- Modal: Crear -->
+  <section th:replace="/fragments/crear.html::crear"></section>
 
-            <form id="guardarForm" class="col" action="/guardar" method="PATCH">
-            <div class="modal-body"> 
-                <div class="container">
-                  <div class="row-auto mt-2">
-                    <input type="text" class="form-control" name="tituloGuardar" th:value="${editar.titulo}">
-                  </div>
-                  <input hidden type="text" class="form-control" name="idGuardar" th:value="${editar.id}">
-                  <div class="row-auto mt-2">
-                    <textarea th:text="${editar.cuerpo}" class="form-control" aria-label="cuerpo" name="cuerpoGuardar" placeholder="..." style="height: 50vh; resize: none;"></textarea>
-                  </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-              <a href="/"><button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button></a>
-              <a href="/"><button type="submit" class="btn btn-sm btn-warning">Guardar</button></a>
-            </div>
-          </form>
-          </div>
-        </div>
-      </div>
-
-      <button th:if="${editar}" id="editarBtn" hidden class="nav-link btn-secondary btn btn-sm toggle" type="button" data-bs-toggle="modal" data-bs-target="#modalEditar"></button>
-    </main>
-      
-    <th:block layout:fragment="script">
-      <script th:if="${editar}">document.querySelector("#editarBtn").click();</script>
-    </th:block>
+<th:block layout:fragment="script">
+  <script th:if="${editar}">document.querySelector("#editarBtn").click();</script>
+</th:block>
+</body>
+</html>

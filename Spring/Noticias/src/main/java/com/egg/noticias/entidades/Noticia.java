@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -23,10 +25,17 @@ public class Noticia implements Serializable {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String cuerpo;
 
+    @ManyToOne()
+    @JoinColumn(name = "periodista_id")
+    private Usuario creador;
+
+    private Boolean activo = true;
+
     public Noticia() {
     }
 
-    public Noticia(String titulo, String cuerpo) {
+    public Noticia(Usuario creador, String titulo, String cuerpo) {
+        this.creador = creador;
         this.titulo = titulo;
         this.cuerpo = cuerpo;
     }
@@ -49,6 +58,18 @@ public class Noticia implements Serializable {
 
     public void setCuerpo(String cuerpo) {
         this.cuerpo = cuerpo;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Usuario getCreador() {
+        return creador;
     }
     
 }

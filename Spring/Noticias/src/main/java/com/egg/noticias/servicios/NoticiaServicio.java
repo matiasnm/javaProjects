@@ -1,14 +1,17 @@
 package com.egg.noticias.servicios;
 
 import com.egg.noticias.entidades.Noticia;
+import com.egg.noticias.entidades.Usuario;
 import com.egg.noticias.excepciones.CamposVaciosException;
+import com.egg.noticias.excepciones.SinResultadosExcepcion;
 import com.egg.noticias.repositorios.NoticiaRepositorio;
+import com.egg.noticias.repositorios.UsuarioRepositorio;
+
 import java.util.List;
-import java.util.Optional;
-import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class NoticiaServicio {
@@ -16,55 +19,63 @@ public class NoticiaServicio {
     @Autowired
     private NoticiaRepositorio noticiaRepositorio;
 
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
+
     @Transactional
-    public void create(String titulo, String cuerpo) throws CamposVaciosException {
+    public void create(Usuario usuario, String titulo, String cuerpo) throws CamposVaciosException, SinResultadosExcepcion {
         validar(titulo, cuerpo);
-        Noticia noticia = new Noticia(titulo, cuerpo);
+        Usuario usuarioDb = usuarioRepositorio.findById(usuario.getId())
+            .orElseThrow(() -> SinResultadosExcepcion.of(usuario.getEmail()));
+
+        Noticia noticia = new Noticia(usuarioDb, titulo, cuerpo);
         noticiaRepositorio.save(noticia);
     }
     
-    @Transactional()//readOnly = true
+    @Transactional(readOnly = true)
     public List<Noticia> read() {
         List<Noticia> noticias;
-        noticias = noticiaRepositorio.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        //.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        noticias = noticiaRepositorio.findByActivoIsTrue();
         return noticias;
     }
     
-    @Transactional()//readOnly = true
-    public Noticia read(String id) {
-        Noticia noticia;
-        noticia = noticiaRepositorio.getById(id);
-        return noticia;
-    }
-
-    /*
-    @Transactional()//readOnly = true
-    public List<Noticia> search(String titulo) {
-        List<Noticia> noticias;
-        noticias = noticiaRepositorio.buscarPorTitulo(titulo);
+    @Transactional(readOnly = true)
+    public List<Noticia> readByCreador(Usuario usuario) throws SinResultadosExcepcion{
+        List<Noticia> noticias = noticiaRepositorio.findByCreadorAndActivoIsTrue(usuario);
         return noticias;
     }
-    */
 
-    @Transactional()//readOnly = true
+    @Transactional(readOnly = true)
+    public List<Noticia> readByUnactive() {
+        List<Noticia> noticias = noticiaRepositorio.findByActivoIsFalse();
+        return noticias;
+    }
+
+    @Transactional()
+    public Noticia read(String id) throws SinResultadosExcepcion{
+        Noticia noticia = noticiaRepositorio.findByIdAndActivoIsTrue(id)
+            .orElseThrow(() -> SinResultadosExcepcion.of(id));
+        return noticia;
+    }
+    
+    @Transactional(readOnly = true)
     public List<Noticia> search(String titulo) {
         List<Noticia> noticias;
-        noticias = noticiaRepositorio.findByTituloContains(titulo);
+        noticias = noticiaRepositorio.findByTituloContainsAndActivoIsTrue(titulo);
         return noticias;
     }
 
     @Transactional
-    public void update(String id, String titulo, String cuerpo) throws CamposVaciosException{
+    public void update(String id, String titulo, String cuerpo) throws CamposVaciosException, SinResultadosExcepcion {
         validar(titulo, cuerpo);
-        
-        Optional<Noticia> respuesta = noticiaRepositorio.findById(id);
+
+        Noticia noticia = noticiaRepositorio.findByIdAndActivoIsTrue(id)
+            .orElseThrow(() -> SinResultadosExcepcion.of(id));
          
-        if (respuesta.isPresent()) {
-            Noticia noticia = respuesta.get();
-            noticia.setTitulo(titulo);
-            noticia.setCuerpo(cuerpo);
-            noticiaRepositorio.save(noticia);
-        }
+        noticia.setTitulo(titulo);
+        noticia.setCuerpo(cuerpo);
+        noticiaRepositorio.save(noticia);
     }
     
     @Transactional
@@ -80,5 +91,13 @@ public class NoticiaServicio {
             throw new CamposVaciosException("El cuerpo de la Noticia no puede estar vacío.");
         }
     }
+
+    @Transactional
+    public void unactive(String id) {
+        Noticia noticia = read(id);
+        noticia.setActivo(false);
+        noticiaRepositorio.save(noticia);
+    }
+
     
 }
